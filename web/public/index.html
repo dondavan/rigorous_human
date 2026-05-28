@@ -13,45 +13,27 @@
       body {
         margin: 0;
         min-height: 100vh;
-        display: grid;
-        place-items: center;
-        background: linear-gradient(135deg, #0f172a, #1e293b);
-        color: #e2e8f0;
+        background: #ffffff;
       }
 
       main {
-        width: min(680px, calc(100% - 2rem));
-        padding: 2rem;
-        border-radius: 20px;
-        background: rgba(15, 23, 42, 0.82);
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        width: 100vw;
+        height: 100vh;
       }
 
-      h1 {
-        margin-top: 0;
-        font-size: clamp(2rem, 4vw, 3rem);
+      canvas {
+        width: 100vw;
+        height: 100vh;
+        display: block;
+        background: #ffffff;
       }
 
-      p, li {
-        line-height: 1.6;
-      }
-
-      code {
-        padding: 0.15rem 0.4rem;
-        border-radius: 6px;
-        background: rgba(148, 163, 184, 0.18);
-      }
     </style>
   </head>
   <body>
     <main>
-      <h1>Node.js template ready</h1>
-      <p>This starter app is set up to run behind Apache, with Node listening locally and Apache handling public HTTPS traffic on port 443.</p>
-      <ul>
-        <li>Health check: <code>/health</code></li>
-        <li>Sample API route: <code>/api/hello</code></li>
-        <li>Static assets served from <code>public/</code></li>
-      </ul>
+      <canvas id="oscillator" aria-label="2D wave simulation"></canvas>
     </main>
+    <script src="./oscillator.js" defer></script>
   </body>
 </html>
