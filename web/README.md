@@ -26,6 +26,8 @@ The bootstrap script detects macOS or Linux, installs `node` and `npm` if they a
 
 By default the app listens on `127.0.0.1:3000`, which is a good fit for Apache reverse proxying from port `443`.
 
+If the browser still shows an Apache page instead of this app, the usual cause is that the active SSL vhost is not proxying to `127.0.0.1:3000` or another `:443` site is taking precedence. Make sure the `VirtualHost *:443` block from `server/apache2.conf` is the enabled HTTPS site and reload Apache.
+
 ## Available routes
 
 - `/` — starter HTML page
