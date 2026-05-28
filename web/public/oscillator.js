@@ -110,10 +110,12 @@
 
           let intensity;
           if (t < 0.5) {
-            intensity = Math.round((t / 0.5) * 255);
+            intensity = (t / 0.5);
           } else {
-            intensity = Math.round((1 - (t - 0.5) / 0.5) * 255);
+            intensity = (1 - (t - 0.5) / 0.5);
           }
+          intensity = Math.pow(intensity, 1.5);
+          intensity = Math.round(intensity * 255);
 
           pixels[p] = intensity;
           pixels[p + 1] = intensity;
