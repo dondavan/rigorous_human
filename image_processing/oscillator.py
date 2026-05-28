@@ -6,21 +6,37 @@ from matplotlib import animation
 # u_tt = c^2 * (u_xx + u_yy) with simple damping and absorbing boundary (sponge)
 
 # Parameters
-nx, ny = 200, 200
-Lx, Ly = 100.0, 100.0
+nx, ny = 1000, 1000
+Lx, Ly = 1000.0, 1000.0
 x = np.linspace(-Lx/2, Lx/2, nx)
 y = np.linspace(-Ly/2, Ly/2, ny)
 dx = x[1] - x[0]
 dy = y[1] - y[0]
 X, Y = np.meshgrid(x, y, indexing='xy')
 
-c = 1.0                  # wave speed
+# Domain mask: square with a semicircular bulge on each side
+a = 250.0  # half-side of the inner square
+r = a / 2.0  # radius of the semicircular caps (half the previous diameter)
+square = (np.abs(X) <= a) & (np.abs(Y) <= a)
+top_cap    = (X**2 + (Y - a)**2 <= r**2) & (Y >= a)
+bottom_cap = (X**2 + (Y + a)**2 <= r**2) & (Y <= -a)
+right_cap  = ((X - a)**2 + Y**2 <= r**2) & (X >= a)
+left_cap   = ((X + a)**2 + Y**2 <= r**2) & (X <= -a)
+domain_mask = square | top_cap | bottom_cap | right_cap | left_cap
+
+def masked_display(u_field):
+    """Return a copy with NaN outside the domain for display."""
+    d = u_field.copy()
+    d[~domain_mask] = np.nan
+    return d
+
+c = 400.0                  # wave speed
 courant = 0.5            # Courant number (<= 1/sqrt(2) for 2D stability)
 dt = courant * min(dx, dy) / c
 c2dt2 = (c * dt)**2
 
 # damping and sponge (absorb at edges)
-damp_global = 0.0005
+damp_global = 0.0000
 sponge_width = int(min(nx, ny) * 0.12)
 sponge = np.ones((ny, nx))
 for i in range(ny):
@@ -41,7 +57,7 @@ u_next = np.zeros((ny, nx), dtype=float)  # u at t+dt
 # define drops: list of (time_step, x_pos, y_pos, amplitude, sigma)
 drops = []
 # drop at center at t=5
-drops.append((5, 0.0, 0.0, 3.0, 2.0))
+drops.append((5, 0.0, 0.0, 150.0, 10.0))
 # another drop offset at t=30
 #drops.append((30, 10.0, -8.0, 2.5, 1.8))
 # multiple quick drops
@@ -61,14 +77,19 @@ frames_to_record = list(range(0, nsteps, max(1, nsteps // 40)))
 expected_amp = max(d[3] for d in drops) if drops else 1.0
 vmax = expected_amp * 0.9
 
+print(expected_amp, vmax)
 # Prepare figure for animation
 fig, ax = plt.subplots(figsize=(6, 6))
-im = ax.imshow(u, extent=[x.min(), x.max(), y.min(), y.max()], cmap='seismic',
-               vmin=-vmax, vmax=vmax, origin='lower')
-ax.set_title('2D water-drop ripple (u)')
-ax.set_xlabel('x')
-ax.set_ylabel('y')
-plt.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+fig.patch.set_facecolor('#FFFFFF')
+ax.set_facecolor('#FFFFFF')
+# Custom grayscale: black at extremes (-vmax, +vmax), white at 0
+from matplotlib.colors import LinearSegmentedColormap
+cmap = LinearSegmentedColormap.from_list('gray_white_zero',
+           [(0.0, 'black'), (0.5, 'white'), (1.0, 'black')])
+cmap.set_bad('#FFFFFF')
+im = ax.imshow(masked_display(u), extent=[x.min(), x.max(), y.min(), y.max()],
+               cmap=cmap, vmin=-vmax, vmax=vmax, origin='lower')
+ax.axis('off')
 
 # Precompute drop schedule by step
 drops_by_step = {}
@@ -105,11 +126,15 @@ def update(frame):
     u_next *= (1.0 - damp_global)
     u_next *= sponge
 
+    # enforce domain boundary
+    u_next[~domain_mask] = 0.0
+
     # shift fields
     u_prev, u = u, u_next
+    u_prev[~domain_mask] = 0.0
 
     # update image
-    im.set_data(u)
+    im.set_data(masked_display(u))
     frame_index += 1
     return [im]
 
