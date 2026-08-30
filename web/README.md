@@ -83,20 +83,6 @@ The script:
 
 ### Option 2: systemd service (production-grade, GCP recommended)
 
-Automated setup (recommended):
-```bash
-sudo bash setup-systemd.sh
-```
-
-This script automatically:
-- Detects the correct working directory
-- Updates the service file
-- Installs to systemd
-- Enables and starts the service
-- Shows status and useful commands
-
-Or manual setup:
-
 1. Edit `rigorous-human.service` and update the `WorkingDirectory` path to match your deployment.
 2. Copy the service file to systemd:
    ```bash

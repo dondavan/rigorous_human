@@ -8,7 +8,7 @@ SERVICE_FILE="${SCRIPT_DIR}/${SERVICE_NAME}.service"
 SYSTEMD_DIR="/etc/systemd/system"
 
 log_msg() {
-  echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"
+  echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >&2
 }
 
 error_msg() {
