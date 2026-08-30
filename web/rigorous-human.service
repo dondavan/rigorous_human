@@ -6,10 +6,10 @@ StartLimitBurst=3
 
 [Service]
 Type=simple
-User=www-data
+User=root
 WorkingDirectory=/path/to/rigorous_human/web
 Environment="NODE_ENV=production"
-ExecStart=/usr/bin/node src/server.js
+ExecStart=/usr/bin/env node src/server.js
 Restart=always
 RestartSec=5
 StandardOutput=journal

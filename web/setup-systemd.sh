@@ -29,10 +29,29 @@ check_service_file() {
   log_msg "Found service file: $SERVICE_FILE"
 }
 
+check_node() {
+  if ! command -v node >/dev/null 2>&1; then
+    error_msg "node is not installed or not in PATH. Install Node.js first."
+  fi
+  local node_path
+  node_path=$(command -v node)
+  log_msg "Found node at: $node_path"
+}
+
 install_service() {
-  log_msg "Installing systemd service..."
-  cp rigorous-human.service /etc/systemd/system/
-  log_msg "Service file installed to ${SYSTEMD_DIR}/${SERVICE_NAME}.service"
+  log_msg "Updating service file with correct paths..."
+  
+  local temp_file
+  temp_file=$(mktemp)
+  
+  sed "s|WorkingDirectory=.*|WorkingDirectory=${SCRIPT_DIR}|g" "$SERVICE_FILE" > "$temp_file"
+  
+  log_msg "Copying service to ${SYSTEMD_DIR}/${SERVICE_NAME}.service"
+  cp "$temp_file" "${SYSTEMD_DIR}/${SERVICE_NAME}.service"
+  chmod 644 "${SYSTEMD_DIR}/${SERVICE_NAME}.service"
+  log_msg "Service file installed successfully"
+  
+  rm "$temp_file"
 }
 
 enable_and_start_service() {
@@ -67,6 +86,7 @@ main() {
   
   require_sudo
   check_service_file
+  check_node
   
   install_service
   enable_and_start_service
