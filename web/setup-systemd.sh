@@ -29,33 +29,10 @@ check_service_file() {
   log_msg "Found service file: $SERVICE_FILE"
 }
 
-update_service_file() {
-  log_msg "Creating temporary service file with correct WorkingDirectory..."
-  
-  local temp_file
-  temp_file=$(mktemp)
-  
-  sed "s|WorkingDirectory=.*|WorkingDirectory=${SCRIPT_DIR}|g" "$SERVICE_FILE" > "$temp_file"
-  
-  if grep -q "WorkingDirectory=${SCRIPT_DIR}" "$temp_file"; then
-    log_msg "Service file updated: WorkingDirectory=${SCRIPT_DIR}"
-  else
-    rm "$temp_file"
-    error_msg "Failed to update WorkingDirectory in service file"
-  fi
-  
-  echo "$temp_file"
-}
-
 install_service() {
-  local temp_file=$1
-  
   log_msg "Installing systemd service..."
-  cp "$temp_file" "${SYSTEMD_DIR}/${SERVICE_NAME}.service"
-  chmod 644 "${SYSTEMD_DIR}/${SERVICE_NAME}.service"
+  cp rigorous-human.service /etc/systemd/system/
   log_msg "Service file installed to ${SYSTEMD_DIR}/${SERVICE_NAME}.service"
-  
-  rm "$temp_file"
 }
 
 enable_and_start_service() {
