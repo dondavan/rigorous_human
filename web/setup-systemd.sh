@@ -68,10 +68,7 @@ main() {
   require_sudo
   check_service_file
   
-  local temp_file
-  temp_file=$(update_service_file)
-  
-  install_service "$temp_file"
+  install_service
   enable_and_start_service
   
   log_msg ""
