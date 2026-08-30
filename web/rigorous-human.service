@@ -1,0 +1,22 @@
+[Unit]
+Description=Rigorous Human Node.js Web Service
+After=network.target
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/path/to/rigorous_human/web
+Environment="NODE_ENV=production"
+ExecStart=/usr/bin/node src/server.js
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+TimeoutStopSec=10
+KillMode=mixed
+
+[Install]
+WantedBy=multi-user.target

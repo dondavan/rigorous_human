@@ -23,3 +23,11 @@ Deployment checklist:
 1. HTTPS:SSL:certi-bot
 2. Redirect HTTP to HTTPS: /etc/apache2/apache2.conf
 3. Proxy setup at          /etc/apache2/sites-available/default-ssl.conf
+
+
+
+# Certificate
+HTTPs Certification are managed through certbot
+
+Renewal:
+> sudo certbot renew

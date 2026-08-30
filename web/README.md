@@ -64,8 +64,48 @@ Example HTTPS virtual host snippet:
 </VirtualHost>
 ```
 
+## Production deployment
+
+### Option 1: Daemon script (simple, no additional dependencies)
+
+Run the service in the background with automatic health checks and restart-on-crash:
+
+```bash
+bash run-daemon.sh &
+```
+
+The script:
+- Monitors the `/health` endpoint every 10 seconds
+- Automatically restarts if the service crashes
+- Restarts after 3 consecutive health check failures
+- Logs all activity to `logs/service.log`
+- Can be stopped with: `kill $(cat .daemon.pid)`
+
+### Option 2: systemd service (production-grade, GCP recommended)
+
+1. Edit `rigorous-human.service` and update the `WorkingDirectory` path to match your deployment.
+2. Copy the service file to systemd:
+   ```bash
+   sudo cp rigorous-human.service /etc/systemd/system/
+   ```
+3. Enable and start:
+   ```bash
+   sudo systemctl daemon-reload
+   sudo systemctl enable rigorous-human
+   sudo systemctl start rigorous-human
+   ```
+4. Check status:
+   ```bash
+   sudo systemctl status rigorous-human
+   ```
+5. View logs:
+   ```bash
+   sudo journalctl -u rigorous-human -f
+   ```
+
 ## Notes
 
 - Keep Apache exposed publicly on `443`.
 - Keep Node.js bound to localhost unless you intentionally want public access.
-- For long-running production use, run the app with a process manager such as `systemd`, `pm2`, or Docker.
+- The `/health` endpoint returns `503` until the app is ready, then `200` with uptime info—use this for load balancer checks.
+- Daemon script and systemd service both auto-restart on crash; use one or the other, not both.
