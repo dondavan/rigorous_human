@@ -74,6 +74,9 @@ main {
 @media (max-width: 768px) {
   #app-icon {
     width: 60px;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
   }
 
   #app-title {
