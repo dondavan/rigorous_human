@@ -87,12 +87,7 @@ main {
   #app-icon {
     width: 100px;
   }
-
-  #app-title {
-    top: 0.5rem;
-    left: 1rem;
-    font-size: 1.5rem;
-  }
+  
 }
 
 
@@ -100,6 +95,12 @@ main {
 @media (max-width: 768px) {
   :root {
     font-size: 14px;
+  }
+
+  #app-title {
+    top: 0.5rem;
+    left: 1rem;
+    font-size: 1.5rem;
   }
 }
 
