@@ -66,22 +66,7 @@ Example HTTPS virtual host snippet:
 
 ## Production deployment
 
-### Option 1: Daemon script (simple, no additional dependencies)
-
-Run the service in the background with automatic health checks and restart-on-crash:
-
-```bash
-bash run-daemon.sh &
-```
-
-The script:
-- Monitors the `/health` endpoint every 10 seconds
-- Automatically restarts if the service crashes
-- Restarts after 3 consecutive health check failures
-- Logs all activity to `logs/service.log`
-- Can be stopped with: `kill $(cat .daemon.pid)`
-
-### Option 2: systemd service (production-grade, GCP recommended)
+### Option 1 : systemd service (production-grade, GCP recommended)
 
 1. Edit `rigorous-human.service` and update the `WorkingDirectory` path to match your deployment.
 2. Copy the service file to systemd:
