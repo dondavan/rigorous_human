@@ -61,7 +61,7 @@ main {
 }
 
 #app-title {
-  position: absolute;
+  position: fixed;
   color: #000000;
   top: 1rem;
   left: 10rem;
