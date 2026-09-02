@@ -16,6 +16,7 @@ body {
   background: #ffffff;
   width: 100%;
   height: 100%;
+  color: #000000;
 }
 
 main {
@@ -30,7 +31,7 @@ main {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1;
+  z-index: 0;
 }
 
 .layer-middle {
@@ -39,7 +40,7 @@ main {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 2;
+  z-index: 10;
 }
 
 .layer-top {
@@ -48,12 +49,12 @@ main {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 3;
+  z-index: 20;
   pointer-events: none;
 }
 
 #oscillator {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -61,12 +62,30 @@ main {
   display: block;
 }
 
+#meta-container{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 8rem;
+  display: block;
+}
+
+#brand-container {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 10rem;
+  width: 35rem;
+  display: inline;
+}
+
 #app-icon {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 80px;
+  top: 1rem;
+  left: 5rem;
+  transform: translate(-50%, 0);
+  width: 3.2rem;
   height: auto;
   object-fit: contain;
 }
@@ -74,12 +93,121 @@ main {
 #app-title {
   position: fixed;
   color: #000000;
-  top: 1rem;
-  left: 10rem;
+  top: 1.5rem;
+  left: 8rem;
   font-weight: 600;
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-family: Courier, monospace;
 }
+
+.content-container{
+  position: absolute;
+  top: 8rem;
+  left: 0;
+  width: 100%;
+  height: calc(100vh - 8rem);
+}
+
+#content-list{
+  position: absolute;
+  top: 0rem;
+  left: 0;
+  width: 35rem;
+  height: calc(100vh - 8rem);
+  display: flex;
+  flex-direction: column;
+}
+
+.content-list-item{
+  position: relative;
+  width: 100%;
+  height: 1.5rem;
+}
+
+.content-list-item-text{
+  position: absolute;
+  top: 0;
+  left: 8rem;
+  width: calc(100% - 8rem);
+  color: #000000;
+  font-size: 1.5rem;
+}
+
+
+#content-main{
+  position: absolute;
+  top: 0rem;
+  right: 8rem;
+  width: 40rem;
+  height: calc(100vh - 8rem);
+  display: flex;
+  flex-direction: column;
+}
+
+#content-main-list{
+  position: absolute;
+  top: 0rem;
+  left: 0;
+  width: 100%;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.content-main-list-item{
+  position: relative;
+  width: 100%;
+  height: fit-content;
+}
+
+
+.content-main-list-item-function{
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 10rem;
+  height: fit-content;
+  text-align: left;
+}
+
+.content-main-list-item-body{
+  position: absolute;
+  left: 10rem;
+  top: 0;
+  width: calc(100% - 10rem);
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.content-main-list-item-body-title{
+  position: relative;
+  width: 100%;
+  height: fit-content;
+}
+
+.content-main-list-item-body-desc{
+  position: relative;
+  width: 100%;
+  height: fit-content;
+}
+
+.content-main-list-item-body-preview{
+  position: relative;
+  width: 100%;
+  height: fit-content;
+}
+
+.content-main-list-item-body-preview-img{
+  max-width: 30rem;
+  max-height: 30rem;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
 
 /* Mobile icon sizing */
 @media (max-width: 768px) {
@@ -96,7 +224,7 @@ main {
 /* Desktop icon sizing */
 @media (min-width: 1025px) {
   #app-icon {
-    width: 100px;
+    width: 3.2rem;
   }
   
 }
