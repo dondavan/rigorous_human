@@ -4,14 +4,16 @@
 
   const ctx = canvas.getContext('2d', { alpha: false });
   const baseScale = 1000.0;
-  const drops = [{ t: 5, x: 0.0, y: 0.0, amp: 150.0, sigma: 10.0 }];
   const vmax = 150.0 * 0.9;
   const speed = 0.75;
   let animationId = null;
+  let currentSimulation = null;
+  let hasStarted = false;
+  let pendingDropPos = null;
 
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
-  const createSimulation = (viewportWidth, viewportHeight) => {
+  const createSimulation = (viewportWidth, viewportHeight, initialDrop) => {
     const simMax = 300;
     let nx = simMax;
     let ny = Math.round(simMax * (viewportHeight / viewportWidth));
@@ -69,14 +71,6 @@
     let frameIndex = 0;
     let speedAccumulator = 0;
 
-    const dropsByStep = new Map();
-    drops.forEach((drop) => {
-      if (!dropsByStep.has(drop.t)) {
-        dropsByStep.set(drop.t, []);
-      }
-      dropsByStep.get(drop.t).push(drop);
-    });
-
     const addDrop = (field, xPos, yPos, amplitude, sigma) => {
       const sigma2 = 2.0 * sigma * sigma;
       for (let j = 0; j < ny; j += 1) {
@@ -130,13 +124,6 @@
     };
 
     const updateSimulation = () => {
-      const dropsNow = dropsByStep.get(frameIndex);
-      if (dropsNow) {
-        dropsNow.forEach((drop) => {
-          addDrop(u, drop.x, drop.y, drop.amp, drop.sigma);
-        });
-      }
-
       for (let j = 1; j < ny - 1; j += 1) {
         for (let i = 1; i < nx - 1; i += 1) {
           const idx = j * nx + i;
@@ -176,7 +163,26 @@
       animationId = requestAnimationFrame(step);
     };
 
-    return { step, render };
+    const toSimCoords = (clientX, clientY) => {
+      const rect = canvas.getBoundingClientRect();
+      const fracX = clamp((clientX - rect.left) / rect.width, 0, 1);
+      const fracY = clamp((clientY - rect.top) / rect.height, 0, 1);
+      return {
+        x: -Lx / 2 + fracX * Lx,
+        y: -Ly / 2 + fracY * Ly,
+      };
+    };
+
+    const dropAt = (clientX, clientY, amplitude = 150.0, sigma = 10.0) => {
+      const pos = toSimCoords(clientX, clientY);
+      addDrop(u, pos.x, pos.y, amplitude, sigma);
+    };
+
+    if (initialDrop) {
+      dropAt(initialDrop.x, initialDrop.y, initialDrop.amp, initialDrop.sigma);
+    }
+
+    return { step, render, dropAt };
   };
 
   const resize = () => {
@@ -184,6 +190,11 @@
       cancelAnimationFrame(animationId);
       animationId = null;
     }
+
+    hasStarted = false;
+    pendingDropPos = null;
+    window.addEventListener('pointerdown', startOnFirstInput, { passive: true });
+    window.addEventListener('touchstart', startOnFirstInput, { passive: true });
 
     const dpr = window.devicePixelRatio || 1;
     const viewportWidth = Math.max(1, Math.floor(window.innerWidth));
@@ -194,9 +205,38 @@
     canvas.style.height = `${viewportHeight}px`;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    const simulation = createSimulation(viewportWidth, viewportHeight);
-    simulation.render();
-    animationId = requestAnimationFrame(simulation.step);
+    currentSimulation = createSimulation(viewportWidth, viewportHeight, null);
+    currentSimulation.render();
+  };
+
+  const startOnFirstInput = (event) => {
+    if (hasStarted) return;
+
+    let clientX;
+    let clientY;
+    if (event.touches && event.touches.length > 0) {
+      clientX = event.touches[0].clientX;
+      clientY = event.touches[0].clientY;
+    } else if (typeof event.clientX === 'number') {
+      clientX = event.clientX;
+      clientY = event.clientY;
+    } else {
+      clientX = window.innerWidth / 2;
+      clientY = window.innerHeight / 2;
+    }
+
+    pendingDropPos = { clientX, clientY };
+    hasStarted = true;
+
+    if (currentSimulation) {
+      currentSimulation.dropAt(clientX, clientY);
+      if (!animationId) {
+        animationId = requestAnimationFrame(currentSimulation.step);
+      }
+    }
+
+    window.removeEventListener('pointerdown', startOnFirstInput);
+    window.removeEventListener('touchstart', startOnFirstInput);
   };
 
   window.addEventListener('resize', resize);
